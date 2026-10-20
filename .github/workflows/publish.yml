@@ -1,0 +1,26 @@
+name: Publish verified binary release
+on:
+  push:
+    paths: ['release-input.json', '.github/workflows/publish.yml', 'publish.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: binary-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Download and verify distribution binaries
+        run: python3 publish.py
+      - name: Publish verified assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          TAG=$(python3 -c "import json;print(json.load(open('release-input.json'))['tag'])")
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "Kitsune Client $TAG" --notes "Download KitsuneLauncher.exe. Other assets are verified runtime distribution files."
+          gh release upload "$TAG" dist/* --clobber
