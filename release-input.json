@@ -1,0 +1,24 @@
+{
+  "tag": "r55-github",
+  "assets": [
+    {
+      "name": "KitsuneLauncher.exe",
+      "path": "/downloads/KitsuneLauncher-r55.exe",
+      "size": 1448960,
+      "sha256": "e3261981c907d220aec24bbf0da1690b2a3188151a4e0253b298c1d743946bcb"
+    },
+    {
+      "name": "Kitsune-r55-github-release-windows-x64.zip",
+      "parts": "/downloads/r55-github-publish.parts/",
+      "chunkSize": 24000000,
+      "size": 96718969,
+      "sha256": "c7c3929e582aa13f558987d465290266c0d58a5df14d556ed5da6be862848fbd"
+    },
+    {
+      "name": "r53-entity.enc",
+      "path": "/artifacts/r53-entity.enc",
+      "size": 10910004,
+      "sha256": "d225e734c8f8340042f52c7b256be3d3516f74f73e0af98007c8e6fd38a111e9"
+    }
+  ]
+}
