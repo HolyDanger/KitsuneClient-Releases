@@ -1,5 +1,5 @@
 """GitHub-hosted runner: fetch only public ciphertext/distribution binaries."""
-import concurrent.futures, hashlib, json, pathlib, re, time, urllib.request
+import concurrent.futures, hashlib, json, pathlib, re, time, urllib.request, urllib.error
 
 ORIGIN = 'https://kitsune-client-downloads.siestaguard.workers.dev'
 data = json.loads(pathlib.Path('release-input.json').read_text())
@@ -11,11 +11,16 @@ def fetch(path, size):
     assert path.startswith(('/downloads/', '/artifacts/')) and '..' not in path
     for attempt in range(5):
         try:
-            with urllib.request.urlopen(ORIGIN + path, timeout=30) as response:
+            request=urllib.request.Request(ORIGIN + path,headers={'User-Agent':'KitsuneReleasePublisher/55','Accept':'application/octet-stream'})
+            with urllib.request.urlopen(request, timeout=30) as response:
                 assert response.status == 200
                 body = response.read(size + 1)
                 assert len(body) == size
                 return body
+        except urllib.error.HTTPError as error:
+            print('HTTP failure',error.code,error.headers.get('server'),error.headers.get('cf-mitigated'),error.read(180).decode(errors='replace'),flush=True)
+            if attempt == 4: raise
+            time.sleep(attempt + 1)
         except Exception:
             if attempt == 4: raise
             time.sleep(attempt + 1)
